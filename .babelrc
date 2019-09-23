@@ -1,0 +1,5 @@
+{
+  "presets": ["@babel/env"],
+  "plugins" : [ "@babel/proposal-optional-chaining",
+    "babel-plugin-transform-jsx"]
+}
