@@ -1,61 +1,30 @@
-import { isFunction } from "./utils";
+import Mechanism from "./mechanism";
+import engine from "./engine";
 
-const listeners = {};
+const init = () => ({ counter: 0 });
 
-window.$mechanism = { listeners };
+const increment = () => ({ action: "increment" });
 
-const mechanism = program => {
-  const value = 'HENLO!<<<"';
-  const html = render(
-    <div style="border: solid 0.1px" onClick={() => console.log("ASD!")}>
-      {"HELLO WORLD!<'\""}
-      <ul>
-        HERP
-        <li>{value}</li>
-      </ul>
-    </div>
-  );
-  program.elem.innerHTML = html;
+const update = (msg, model) => {
+  switch (msg.action) {
+    case "increment":
+      return { ...model, counter: model.counter + 1 };
+    default:
+      return model;
+  }
 };
 
-// const elem = curry((elem, attrs, inner) => ({ elem, attrs, inner }));
-// const ul = elem("ul");
-// const li = elem("li");
+const view = model => (
+  <div style="border: solid 0.1px" onClick={increment}>
+    {"HELLO WORLD!<'\""}
+    <ul>
+      <li>{model.counter % 2 === 0 ? <div>ASD</div> : model.counter}</li>
+    </ul>
+  </div>
+);
 
-// const attr = curry((key, value) => ({ key, value }));
-// const className = attr("class");
-// const style = attr("style");
-
-// const div = elem("div");
-
-const renderInner = inner => inner.map(render).join("");
-
-const renderAttrs = attrs =>
-  Object.entries(attrs)
-    .map(([key, value]) => {
-      if (isFunction(value)) {
-        listeners[key] = value;
-        return `${key}=$mechanism.listeners['${key}']()`;
-      }
-      return `${key}="${value}"`;
-    })
-    .join(" ");
-
-const renderElem = ({
-  elementName: elem,
-  attributes: attrs,
-  children: inner
-}) =>
-  `<${elem} ${attrs ? renderAttrs(attrs) : ""}>
-    ${inner ? renderInner(inner) : ""}
-    </${elem}>`;
-
-const render = dom => (dom.elementName ? renderElem(dom) : dom);
-
-const init = flags => {};
-
-const update = (msg, model) => {};
-
-const view = model => {};
-
-export default mechanism;
+engine({
+  init,
+  update,
+  view
+})({ node: document.getElementById("root") });
