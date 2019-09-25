@@ -1,10 +1,11 @@
 module.exports = {
   env: {
     browser: true,
-    es6: true
+    es6: true,
+    node: true
   },
   extends: ["prettier"],
-  plugins: ["prettier"],
+  plugins: ["prettier", "react"],
   globals: {
     Atomics: "readonly",
     SharedArrayBuffer: "readonly"
@@ -12,9 +13,24 @@ module.exports = {
   parser: "babel-eslint",
   parserOptions: {
     ecmaVersion: 2018,
-    sourceType: "module"
+    sourceType: "module",
+    ecmaFeatures: {
+      jsx: true
+    }
   },
   rules: {
-    "no-unused-vars": "warn"
+    "no-undef": "error",
+    "no-unused-vars": "warn",
+    "react/react-in-jsx-scope": "error",
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
+    "react/jsx-wrap-multilines": "error",
+    "react/jsx-tag-spacing": "error",
+    "react/jsx-space-before-closing": "error"
+  },
+  settings: {
+    react: {
+      pragma: "Mechanism"
+    }
   }
 };

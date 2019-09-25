@@ -26,18 +26,18 @@ const view = model => (
       </Work>
     </>
   </div>
-  // <div style="border: solid 0.1px" onClick={increment}>
-  //   {"HELLO WORLD!<'\""}
-  //   <ul>
-  //     <>
-  //       <li>{model.counter % 2 === 0 ? <div>ASD</div> : model.counter}</li>
-  //       <Work thing="other" counter={model.counter}>
-  //         <div>ASD</div>
-  //       </Work>
-  //     </>
-  //   </ul>
-  // </div>
 );
+// <div style="border: solid 0.1px" onClick={increment}>
+//   {"HELLO WORLD!<'\""}
+//   <ul>
+//     <>
+//       <li>{model.counter % 2 === 0 ? <div>ASD</div> : model.counter}</li>
+//       <Work thing="other" counter={model.counter}>
+//         <div>ASD</div>
+//       </Work>
+//     </>
+//   </ul>
+// </div>
 
 engine({
   init,
