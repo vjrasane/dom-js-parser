@@ -14,13 +14,29 @@ const update = (msg, model) => {
   }
 };
 
+const Work = ({ children }) => <div>WORK{children}</div>;
+
 const view = model => (
-  <div style="border: solid 0.1px" onClick={increment}>
-    {"HELLO WORLD!<'\""}
-    <ul>
-      <li>{model.counter % 2 === 0 ? <div>ASD</div> : model.counter}</li>
-    </ul>
+  <div>
+    <>
+      <div>FIRST</div>
+      <div>SECOND</div>
+      <Work className="class" counter={model.counter}>
+        <div>ASD {model.counter}</div>
+      </Work>
+    </>
   </div>
+  // <div style="border: solid 0.1px" onClick={increment}>
+  //   {"HELLO WORLD!<'\""}
+  //   <ul>
+  //     <>
+  //       <li>{model.counter % 2 === 0 ? <div>ASD</div> : model.counter}</li>
+  //       <Work thing="other" counter={model.counter}>
+  //         <div>ASD</div>
+  //       </Work>
+  //     </>
+  //   </ul>
+  // </div>
 );
 
 engine({

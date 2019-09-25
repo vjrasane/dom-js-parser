@@ -21,8 +21,7 @@ export default ({ init, update, view }) => ({ node, flags }) => {
   // view loop
   setInterval(() => {
     if (!renderedModel || renderedModel !== model) {
-      const virtualDom = view(model);
-      console.log(virtualDom);
+      const virtualDom = freeze(view(model));
       render(node, virtualDom, renderedVirtualDom);
       renderedModel = model;
       renderedVirtualDom = virtualDom;

@@ -1,5 +1,5 @@
-const MECHANISM_JSX_PRAGMA = "Mechanism.elem";
-const MECHANISM_JSX_FRAGMENT_PRAGMA = "Mechanism.fragment";
+const MECHANISM_JSX_PRAGMA = "Mechanism.createElement";
+const MECHANISM_JSX_FRAGMENT_PRAGMA = "Mechanism.Fragment";
 
 module.exports = function() {
   return {
