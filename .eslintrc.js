@@ -24,9 +24,14 @@ module.exports = {
     "react/react-in-jsx-scope": "error",
     "react/jsx-uses-react": "error",
     "react/jsx-uses-vars": "error",
+    "react/jsx-no-undef": "error",
     "react/jsx-wrap-multilines": "error",
     "react/jsx-tag-spacing": "error",
-    "react/jsx-space-before-closing": "error"
+    "react/jsx-space-before-closing": "error",
+    "react/jsx-pascal-case": "warn",
+    "react/jsx-no-comment-textnodes": "warn",
+    "react/jsx-no-duplicate-props": "warn",
+    "react/forbid-component-props": ["warn", { forbid: ["className"] }]
   },
   settings: {
     react: {

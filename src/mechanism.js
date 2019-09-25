@@ -1,4 +1,4 @@
-import { isFunction, flatten } from "./utils";
+import { isFunction, flatten } from "~/utils";
 
 const MECHANISM_ELEMENT_TYPE_SIGNATURE = "elem";
 const MECHANISM_TYPE_SIGNATURE_PROP = "$__mechanism__type";
@@ -9,7 +9,7 @@ const mechanism = () => {
     createElement: (type, props, ...children) => {
       const flatChildren = flatten(children);
       if (isFunction(type)) {
-        return type({ props, children: flatChildren });
+        return type(props, flatChildren);
       }
       return {
         type,
@@ -18,7 +18,7 @@ const mechanism = () => {
         [MECHANISM_TYPE_SIGNATURE_PROP]: MECHANISM_ELEMENT_TYPE_SIGNATURE
       };
     },
-    Fragment: ({ children }) => flatten(children)
+    Fragment: (_, children) => flatten(children)
   };
 };
 

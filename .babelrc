@@ -1,16 +1,13 @@
 {
   "presets": ["@babel/env", "./babel-preset-mechanism"],
   "plugins": [
+    [
+      "babel-plugin-root-import",
+      {
+        "rootPathSuffix": "./src"
+      }
+    ],
     "@babel/proposal-optional-chaining",
     "@babel/proposal-class-properties"
-    // ,
-    // [
-    //   "@babel/transform-react-jsx",
-    //   {
-    //     "pragma": "Mechanism.elem",
-    //     "pragmaFrag": "Mechanism.fragment"
-    //   }
-    // ]
-    // "babel-plugin-transform-jsx"
   ]
 }

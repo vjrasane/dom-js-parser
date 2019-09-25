@@ -1,5 +1,5 @@
-import { isFunction, exists } from "./utils";
-import { isMechanismElement } from "./mechanism";
+import { isFunction, exists } from "~/utils";
+import { isMechanismElement } from "~/mechanism";
 
 const isEventProp = name => /^on/.test(name);
 

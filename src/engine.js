@@ -1,5 +1,5 @@
 import freeze from "deep-freeze";
-import renderer from "./render";
+import renderer from "~/render";
 
 const UPDATE_INTERVAL = 1; /* milliseconds */
 const VIEW_INTERVAL = 10; /* milliseconds */
