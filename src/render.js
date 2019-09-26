@@ -1,5 +1,5 @@
 import { isFunction, exists } from "~/utils";
-import { isMechanismElement } from "~/mechanism";
+import { MechanismElement } from "~/mechanism";
 
 const isEventProp = name => /^on/.test(name);
 
@@ -40,8 +40,8 @@ const propChanged = (firstProp, secondProp) =>
 const nodeChanged = (firstNode, secondNode) =>
   !(
     firstNode === secondNode ||
-    (isMechanismElement(firstNode) &&
-      isMechanismElement(secondNode) &&
+    (firstNode instanceof MechanismElement &&
+      secondNode instanceof MechanismElement &&
       firstNode.type === secondNode.type)
   );
 
@@ -86,7 +86,7 @@ export default eventListenerCallback => {
   };
 
   const createElement = node => {
-    if (isMechanismElement(node)) {
+    if (node instanceof MechanismElement) {
       const $el = document.createElement(node.type);
       setProps($el, node.props);
       node.children.map(createElement).forEach($el.appendChild.bind($el));
@@ -102,7 +102,7 @@ export default eventListenerCallback => {
       $parent.removeChild($parent.childNodes[index]);
     } else if (nodeChanged(newNode, oldNode)) {
       $parent.replaceChild(createElement(newNode), $parent.childNodes[index]);
-    } else if (isMechanismElement(newNode)) {
+    } else if (newNode instanceof MechanismElement) {
       updateProps($parent.childNodes[index], newNode.props, oldNode.props);
       const newLength = newNode.children.length;
       const oldLength = oldNode.children.length;
