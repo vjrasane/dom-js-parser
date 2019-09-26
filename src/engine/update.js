@@ -18,7 +18,7 @@ export class Return {
 const processCommand = async (cmd, pushMsg) => {
   const effect = isFunction(cmd.effect) ? cmd.effect() : cmd.effect;
   const result = await effect;
-  const msg = cmd.msg(result);
+  const msg = isFunction(cmd.msg) ? cmd.msg(result) : cmd.msg;
   pushMsg(msg);
 };
 

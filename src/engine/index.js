@@ -7,6 +7,17 @@ const UPDATE_INTERVAL = 1; /* milliseconds */
 const VIEW_INTERVAL = 10; /* milliseconds */
 const RENDER_INTERVAL = 10; /* milliseconds */
 
+const loop = (procedure, interval) => {
+  let lock = false;
+  setInterval(() => {
+    if (!lock) {
+      lock = true;
+      procedure();
+      lock = false;
+    }
+  }, interval);
+};
+
 export { Cmd, Return };
 
 export default ({ init, update, view }) => ({ node, flags }) => {
@@ -19,7 +30,7 @@ export default ({ init, update, view }) => ({ node, flags }) => {
 
   let model = initProgram(init, flags);
   // update loop
-  setInterval(() => {
+  loop(() => {
     if (queue.length > 0) {
       model = updater(queue.shift(), model);
     }
@@ -28,7 +39,7 @@ export default ({ init, update, view }) => ({ node, flags }) => {
   // view loop
   let viewedModel;
   let virtualDom;
-  setInterval(() => {
+  loop(() => {
     if (!viewedModel || viewedModel !== model) {
       virtualDom = viewer(model);
       viewedModel = model;
@@ -37,7 +48,7 @@ export default ({ init, update, view }) => ({ node, flags }) => {
 
   // render loop
   let renderedVirtualDom;
-  setInterval(() => {
+  loop(() => {
     if (virtualDom && virtualDom !== renderedVirtualDom) {
       renderer(node, virtualDom, renderedVirtualDom);
       renderedVirtualDom = virtualDom;
