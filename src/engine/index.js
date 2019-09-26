@@ -5,6 +5,7 @@ import getViewer from "~/engine/view";
 
 const UPDATE_INTERVAL = 1; /* milliseconds */
 const VIEW_INTERVAL = 10; /* milliseconds */
+const RENDER_INTERVAL = 10; /* milliseconds */
 
 export { Cmd, Return };
 
@@ -21,19 +22,25 @@ export default ({ init, update, view }) => ({ node, flags }) => {
   setInterval(() => {
     if (queue.length > 0) {
       model = updater(queue.shift(), model);
-      console.log(model);
     }
   }, UPDATE_INTERVAL);
 
-  let renderedModel;
-  let renderedVirtualDom;
   // view loop
+  let viewedModel;
+  let virtualDom;
   setInterval(() => {
-    if (!renderedModel || renderedModel !== model) {
-      const virtualDom = viewer(model);
-      renderer(node, virtualDom, renderedVirtualDom);
-      renderedModel = model;
-      renderedVirtualDom = virtualDom;
+    if (!viewedModel || viewedModel !== model) {
+      virtualDom = viewer(model);
+      viewedModel = model;
     }
   }, VIEW_INTERVAL);
+
+  // render loop
+  let renderedVirtualDom;
+  setInterval(() => {
+    if (virtualDom && virtualDom !== renderedVirtualDom) {
+      renderer(node, virtualDom, renderedVirtualDom);
+      renderedVirtualDom = virtualDom;
+    }
+  }, RENDER_INTERVAL);
 };
