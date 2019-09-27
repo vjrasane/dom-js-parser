@@ -46,8 +46,10 @@ const nodeChanged = (firstNode, secondNode) =>
   );
 
 export default eventListenerCallback => {
-  const wrapEventListener = listener => (...args) =>
+  const wrapEventListener = listener => (...args) => {
+    debugger;
     eventListenerCallback(listener(...args));
+  };
 
   const setProp = ($target, name, value) => {
     if (isEventProp(name)) {
@@ -106,7 +108,7 @@ export default eventListenerCallback => {
       updateProps($parent.childNodes[index], newNode.props, oldNode.props);
       const newLength = newNode.children.length;
       const oldLength = oldNode.children.length;
-      for (let i = 0; i < newLength || i < oldLength; i++) {
+      for (let i = 0; i < Math.max(newLength, oldLength); i++) {
         updateElement(
           $parent.childNodes[index],
           newNode.children[i],
@@ -117,5 +119,13 @@ export default eventListenerCallback => {
     }
   };
 
-  return updateElement;
+  return ($root, newDom, oldDom) => {
+    if (Array.isArray(newDom)) {
+      newDom.forEach((node, index) =>
+        updateElement($root, node, oldDom ? oldDom[index] : null, index)
+      );
+    } else {
+      updateElement($root, newDom, oldDom);
+    }
+  };
 };

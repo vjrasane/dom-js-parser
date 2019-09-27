@@ -1,6 +1,7 @@
 import getRenderer from "~/render";
-import { default as getUpdater, Cmd, Return } from "~/engine/update";
-import initProgram from "~/engine/init";
+import getUpdater from "~/engine/update";
+import getInitializer from "~/engine/init";
+import { Cmd, Return } from "~/engine/command";
 import getViewer from "~/engine/view";
 
 const UPDATE_INTERVAL = 1; /* milliseconds */
@@ -22,13 +23,13 @@ export { Cmd, Return };
 
 export default ({ init, update, view }) => ({ node, flags }) => {
   const queue = [];
-  const pushMsg = msg => queue.push(msg);
+  const dispatchMsg = msg => queue.push(msg);
 
-  const renderer = getRenderer(pushMsg);
-  const updater = getUpdater(update, pushMsg);
+  const renderer = getRenderer(dispatchMsg);
+  const updater = getUpdater(update, dispatchMsg);
   const viewer = getViewer(view);
 
-  let model = initProgram(init, flags);
+  let model = getInitializer(init, dispatchMsg)(flags);
   // update loop
   loop(() => {
     if (queue.length > 0) {
@@ -40,7 +41,7 @@ export default ({ init, update, view }) => ({ node, flags }) => {
   let viewedModel;
   let virtualDom;
   loop(() => {
-    if (!viewedModel || viewedModel !== model) {
+    if (model && model !== viewedModel) {
       virtualDom = viewer(model);
       viewedModel = model;
     }

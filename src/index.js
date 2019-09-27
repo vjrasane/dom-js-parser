@@ -21,7 +21,7 @@ const update = (msg, model) => {
     case "command":
       return new Return(
         model,
-        new Cmd(modify, setTimeoutPromise(1000).then(() => 5))
+        new Cmd(setTimeoutPromise(1000).then(() => 5), modify)
       );
     default:
       return model;
@@ -29,12 +29,14 @@ const update = (msg, model) => {
 };
 
 const view = model => (
-  <div>
-    <div>Counter: {model.counter}</div>
-    <button onClick={increment}>+</button>
-    <button onClick={decrement}>-</button>
-    <button onClick={command}>mod</button>
-  </div>
+  <>
+    <div>
+      <div>Counter: {model.counter}</div>
+      <button onClick={increment}>+</button>
+      <button onClick={decrement}>-</button>
+      <button onClick={command}>mod</button>
+    </div>
+  </>
 );
 
 engine({
