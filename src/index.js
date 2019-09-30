@@ -1,9 +1,9 @@
 import Mechanism from "~/mechanism";
-import { engine, Cmd, Update, Sub } from "~/engine";
+import { engine, Cmd, Update, Init, Sub } from "~/engine";
 
 const setTimeoutPromise = ms => new Promise(resolve => setTimeout(resolve, ms));
 
-const init = () => ({ counter: 0 });
+const init = () => Init({ counter: 0 }, Sub.listen("keypress", keypress));
 
 const decrement = { action: "decrement" };
 const increment = { action: "increment" };
