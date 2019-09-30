@@ -1,7 +1,5 @@
 export class Effect {
-  constructor(effect, success, failure) {
+  constructor(effect) {
     this.effect = effect;
-    this.success = success;
-    this.failure = failure;
   }
 }

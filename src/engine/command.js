@@ -1,13 +1,27 @@
 import { isFunction } from "~/utils";
 import { Effect } from "~/engine/effect";
 
-export class Cmd extends Effect {
+export class Command extends Effect {
   constructor(cmd, success, failure) {
-    super(cmd, success, failure);
+    super(cmd);
+    this.success = success;
+    this.failure = failure;
   }
 
   dispatch = async dispatchMsg => processCommand(this, dispatchMsg);
 }
+
+class Result extends Command {
+  constructor(result) {
+    super(result);
+  }
+
+  dispatch = async dispatchMsg => dispatchMsg(this.effect);
+}
+
+export const Cmd = (cmd, success, failure) =>
+  new Command(cmd, success, failure);
+Cmd.result = result => new Result(result);
 
 export const processCommand = async (cmd, dispatchMsg) => {
   let msg;

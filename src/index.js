@@ -1,5 +1,5 @@
 import Mechanism from "~/mechanism";
-import { default as engine, Cmd, Return, Sub } from "~/engine";
+import { engine, Cmd, Update, Sub } from "~/engine";
 
 const setTimeoutPromise = ms => new Promise(resolve => setTimeout(resolve, ms));
 
@@ -21,9 +21,16 @@ const update = (msg, model) => {
     case "modify":
       return { ...model, counter: model.counter + msg.amount };
     case "command":
-      return Return(model, Cmd(setTimeoutPromise(1000).then(() => 5), modify));
+      return Update(model, Cmd(setTimeoutPromise(1000).then(() => 5), modify));
     case "toggle":
-      return { ...model, toggled: !model.toggled };
+      let interval;
+      if (!model.interval) {
+        interval = Sub.interval(increment, 10);
+      } else {
+        model.interval.clear();
+      }
+
+      return Update({ ...model, interval }, interval);
     case "keypress":
       console.log(msg.event);
       return;
@@ -44,15 +51,8 @@ const view = model => (
   </>
 );
 
-const subscriptions = model => [
-  model.toggled && Sub.interval(10, Cmd(5, modify)),
-  Sub.event("keydown", keypress),
-  Sub.event("dblclick", toggle)
-];
-
 engine({
   init,
   update,
-  view,
-  subscriptions
+  view
 })({ node: document.getElementById("root") });

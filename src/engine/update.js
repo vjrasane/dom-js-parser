@@ -1,4 +1,5 @@
 import { isFunction, throwError } from "~/utils";
+import { Return } from "~/engine/return";
 import process from "~/engine/process";
 
 const throwUpdateError = throwError(
@@ -7,12 +8,7 @@ const throwUpdateError = throwError(
   )
 );
 
-export class Update {
-  constructor(model, ...effects) {
-    this.model = model;
-    this.effects = effects || [];
-  }
-}
+export const Update = (model, ...effects) => new Return(model, ...effects);
 
 export const getUpdater = (update, dispatchMsg) =>
   isFunction(update) ? process(update, dispatchMsg) : throwUpdateError;
