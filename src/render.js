@@ -1,4 +1,5 @@
 import { isFunction, exists } from "~/utils";
+import { msgEventListener } from "~/engine/command";
 import { MechanismElement } from "~/mechanism";
 
 const isEventProp = name => /^on/.test(name);
@@ -45,17 +46,12 @@ const nodeChanged = (firstNode, secondNode) =>
       firstNode.type === secondNode.type)
   );
 
-export default eventListenerCallback => {
-  const wrapEventListener = listener =>
-    isFunction(listener)
-      ? (...args) => eventListenerCallback(listener(...args))
-      : () => eventListenerCallback(listener);
-
+export default dispatchMsg => {
   const setProp = ($target, name, value) => {
     if (isEventProp(name)) {
       $target.addEventListener(
         extractEventName(name),
-        wrapEventListener(value)
+        msgEventListener(value, dispatchMsg)
       );
     } else if (name === "className") {
       $target.setAttribute("class", value);

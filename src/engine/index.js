@@ -1,7 +1,12 @@
 import getRenderer from "~/render";
 import getUpdater from "~/engine/update";
 import getInitializer from "~/engine/init";
-import { getSubscriber, processIntervals, Sub } from "~/engine/subscriptions";
+import {
+  getSubscriber,
+  processIntervals,
+  attachListeners,
+  Sub
+} from "~/engine/subscriptions";
 import { Cmd as InternalCmd, Return as InternalReturn } from "~/engine/command";
 import getViewer from "~/engine/view";
 
@@ -64,18 +69,19 @@ export default ({ init, update, view, subscriptions }) => ({ node, flags }) => {
     }
   }, RENDER_INTERVAL);
 
+  // subscription loop
   let subs = {};
   let subscribedModel;
-
-  // subscription loop
+  let eventListeners = {};
   loop(() => {
     if (model && model !== subscribedModel) {
       subs = subscriber(model);
+      attachListeners(subs.events, eventListeners, dispatchMsg);
     }
   }, SUBSCRIPTION_INTERVAL);
 
-  let lastIntervalExecution = Date.now();
   // interval subscription loop
+  let lastIntervalExecution = Date.now();
   loop(() => {
     const now = Date.now();
     processIntervals(subs.intervals, now, lastIntervalExecution, dispatchMsg);

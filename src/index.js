@@ -10,6 +10,7 @@ const increment = { action: "increment" };
 const command = { action: "command" };
 const modify = amount => ({ action: "modify", amount });
 const toggle = { action: "toggle" };
+const keypress = event => ({ action: "keypress", event });
 
 const update = (msg, model) => {
   switch (msg.action) {
@@ -23,6 +24,9 @@ const update = (msg, model) => {
       return Return(model, Cmd(setTimeoutPromise(1000).then(() => 5), modify));
     case "toggle":
       return { ...model, toggled: !model.toggled };
+    case "keypress":
+      console.log(msg.event);
+      return;
     default:
       return model;
   }
@@ -40,8 +44,11 @@ const view = model => (
   </>
 );
 
-const subscriptions = model =>
-  model.toggled && Sub.interval(10, Cmd(5, modify));
+const subscriptions = model => [
+  model.toggled && Sub.interval(10, Cmd(5, modify)),
+  Sub.event("keydown", keypress),
+  Sub.event("dblclick", toggle)
+];
 
 engine({
   init,

@@ -21,3 +21,10 @@ export const partition = (array, condition) =>
     },
     [[], []]
   );
+
+export const groupBy = (array, accessor) =>
+  array.reduce((acc, curr) => {
+    const key = accessor(curr);
+    acc[key] = accessor(curr) in acc ? [...acc[key], curr] : [curr];
+    return acc;
+  }, {});

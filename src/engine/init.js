@@ -1,5 +1,5 @@
 import { isFunction } from "~/utils";
-import process from "~/engine/command";
+import process from "~/engine/process";
 
 export default (init, dispatchMsg) =>
   isFunction(init) ? process(init, dispatchMsg) : init;
