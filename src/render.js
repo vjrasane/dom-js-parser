@@ -46,10 +46,10 @@ const nodeChanged = (firstNode, secondNode) =>
   );
 
 export default eventListenerCallback => {
-  const wrapEventListener = listener => (...args) => {
-    debugger;
-    eventListenerCallback(listener(...args));
-  };
+  const wrapEventListener = listener =>
+    isFunction(listener)
+      ? (...args) => eventListenerCallback(listener(...args))
+      : () => eventListenerCallback(listener);
 
   const setProp = ($target, name, value) => {
     if (isEventProp(name)) {

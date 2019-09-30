@@ -1,10 +1,12 @@
 import getRenderer from "~/render";
 import getUpdater from "~/engine/update";
 import getInitializer from "~/engine/init";
-import { Cmd, Return } from "~/engine/command";
+import { getSubscriber, processIntervals, Sub } from "~/engine/subscriptions";
+import { Cmd as InternalCmd, Return as InternalReturn } from "~/engine/command";
 import getViewer from "~/engine/view";
 
 const UPDATE_INTERVAL = 1; /* milliseconds */
+const SUBSCRIPTION_INTERVAL = 1; /* milliseconds */
 const VIEW_INTERVAL = 10; /* milliseconds */
 const RENDER_INTERVAL = 10; /* milliseconds */
 
@@ -19,15 +21,21 @@ const loop = (procedure, interval) => {
   }, interval);
 };
 
-export { Cmd, Return };
+const Cmd = (effect, success, failure) =>
+  new InternalCmd(effect, success, failure);
 
-export default ({ init, update, view }) => ({ node, flags }) => {
+const Return = (model, ...cmds) => new InternalReturn(model, ...cmds);
+
+export { Cmd, Return, Sub };
+
+export default ({ init, update, view, subscriptions }) => ({ node, flags }) => {
   const queue = [];
   const dispatchMsg = msg => queue.push(msg);
 
   const renderer = getRenderer(dispatchMsg);
   const updater = getUpdater(update, dispatchMsg);
   const viewer = getViewer(view);
+  const subscriber = getSubscriber(subscriptions);
 
   let model = getInitializer(init, dispatchMsg)(flags);
   // update loop
@@ -55,4 +63,22 @@ export default ({ init, update, view }) => ({ node, flags }) => {
       renderedVirtualDom = virtualDom;
     }
   }, RENDER_INTERVAL);
+
+  let subs = {};
+  let subscribedModel;
+
+  // subscription loop
+  loop(() => {
+    if (model && model !== subscribedModel) {
+      subs = subscriber(model);
+    }
+  }, SUBSCRIPTION_INTERVAL);
+
+  let lastIntervalExecution = Date.now();
+  // interval subscription loop
+  loop(() => {
+    const now = Date.now();
+    processIntervals(subs.intervals, now, lastIntervalExecution, dispatchMsg);
+    lastIntervalExecution = now;
+  }, 1 /* interval interval lol, obviously constant 1 millisecond */);
 };

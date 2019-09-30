@@ -12,3 +12,12 @@ export const throwError = err => () => {
 };
 
 export const isString = obj => typeof obj === "string" || obj instanceof String;
+
+export const partition = (array, condition) =>
+  array.reduce(
+    (acc, curr) => {
+      acc[condition(curr) ? 0 : 1].push(curr);
+      return acc;
+    },
+    [[], []]
+  );
