@@ -1,39 +1,40 @@
 import { Effect } from "~/engine/effect";
-import { Command, msgEventListener } from "~/engine/command";
+import { Cmd, Command, msgEventListener } from "~/engine/command";
 
 export class Subscription extends Effect {
-  constructor(sub) {
+  constructor(sub, cancel) {
     super(sub);
+    this.canceller = cancel;
   }
 
-  dispatch = async dispatchMsg => this.effect(dispatchMsg);
+  dispatch = async dispatchMsg => {
+    this.subscription = this.effect(dispatchMsg);
+  };
+
+  cancel = () =>
+    this.subscription &&
+    this.canceller &&
+    Cmd(() => this.canceller(this.subscription));
 }
 
-class Interval extends Subscription {
-  constructor(effect, duration) {
-    super(d => {
-      this.interval = setInterval(
+export const Sub = (sub, cancel) => new Subscription(sub, cancel);
+
+Sub.interval = (effect, duration) =>
+  Sub(
+    d =>
+      setInterval(
         () => (effect instanceof Command ? effect.dispatch(d) : d(effect)),
         duration
-      );
-    });
-  }
+      ),
+    interval => clearInterval(interval)
+  );
 
-  clear = () => clearInterval(this.interval);
-}
-
-class Listener extends Subscription {
-  constructor(trigger, effect) {
-    super(d => {
-      this.listener = msgEventListener(effect, d);
-      window.addEventListener(trigger, this.listener);
-    });
-    this.trigger = trigger;
-  }
-
-  remove = () => window.removeEventListener(this.trigger, this.listener);
-}
-
-export const Sub = sub => new Subscription(sub);
-Sub.interval = (cmd, duration) => new Interval(cmd, duration);
-Sub.listen = (trigger, effect) => new Listener(trigger, effect);
+Sub.listen = (trigger, effect) =>
+  Sub(
+    dispatch => {
+      const listener = msgEventListener(effect, dispatch);
+      window.addEventListener(trigger, listener);
+      return listener;
+    },
+    listener => window.removeEventListener(trigger, listener)
+  );
