@@ -8,14 +8,14 @@ export class Subscription extends Effect {
     this.canceller = cancel;
   }
 
-  execute = async dispatchMsg => this.effect(dispatchMsg);
+  execute = async dispatch => this.effect(dispatch);
   cancel = sub => isFunction(this.canceller) && Cmd(() => this.canceller(sub));
 }
 
 export const Sub = (subscribe, cancel) => {
   let sub;
-  const subscriber = dispatchMsg => {
-    sub = subscribe(dispatchMsg);
+  const subscriber = dispatch => {
+    sub = subscribe(dispatch);
   };
   const canceller = () => cancel(sub);
   return new Subscription(subscriber, canceller);
@@ -23,11 +23,7 @@ export const Sub = (subscribe, cancel) => {
 
 Sub.interval = (effect, duration) =>
   Sub(
-    d =>
-      setInterval(
-        () => (effect instanceof Command ? effect.dispatch(d) : d(effect)),
-        duration
-      ),
+    dispatch => setInterval(() => dispatch(effect), duration),
     interval => clearInterval(interval)
   );
 

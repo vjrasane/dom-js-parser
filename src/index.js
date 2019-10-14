@@ -22,7 +22,7 @@ const update = (msg, model) => {
     case "modify":
       return { ...model, counter: model.counter + msg.amount };
     case "command":
-      return Update(model, Cmd(setTimeoutPromise(1000).then(() => 5), modify));
+      return Cmd(setTimeoutPromise(1000).then(() => 5), modify);
     case "toggle":
       if (!model.interval) {
         let interval = Sub.interval(increment, 10);

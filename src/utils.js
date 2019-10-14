@@ -28,3 +28,9 @@ export const groupBy = (array, accessor) =>
     acc[key] = accessor(curr) in acc ? [...acc[key], curr] : [curr];
     return acc;
   }, {});
+
+export const mapValues = (obj, mapper) =>
+  Object.entries(obj).reduce(
+    (d, [key, queue]) => ({ ...d, [key]: mapper(queue) }),
+    {}
+  );

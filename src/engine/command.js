@@ -8,7 +8,7 @@ export class Command extends Effect {
     this.failure = failure;
   }
 
-  execute = async dispatchMsg => processCommand(this, dispatchMsg);
+  execute = async dispatch => processCommand(this, dispatch);
 }
 
 class Result extends Command {
@@ -16,14 +16,14 @@ class Result extends Command {
     super(result);
   }
 
-  execute = async dispatchMsg => dispatchMsg(this.effect);
+  execute = async dispatch => dispatch(this.effect);
 }
 
 export const Cmd = (cmd, success, failure) =>
   new Command(cmd, success, failure);
 Cmd.result = result => new Result(result);
 
-export const processCommand = async (cmd, dispatchMsg) => {
+export const processCommand = async (cmd, dispatch) => {
   let msg;
   try {
     const effect = isFunction(cmd.effect) ? cmd.effect() : cmd.effect;
@@ -32,10 +32,8 @@ export const processCommand = async (cmd, dispatchMsg) => {
   } catch (error) {
     msg = isFunction(cmd.failure) ? cmd.failure(error) : cmd.failure;
   }
-  dispatchMsg(msg);
+  dispatch(msg);
 };
 
-export const msgEventListener = (msg, dispatchMsg) =>
-  isFunction(msg)
-    ? (...args) => dispatchMsg(msg(...args))
-    : () => dispatchMsg(msg);
+export const msgEventListener = (msg, dispatch) =>
+  isFunction(msg) ? (...args) => dispatch(msg(...args)) : () => dispatch(msg);
