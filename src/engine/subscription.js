@@ -1,23 +1,25 @@
 import { Effect } from "~/engine/effect";
 import { Cmd, Command, msgEventListener } from "~/engine/command";
+import { isFunction } from "~/utils";
 
 export class Subscription extends Effect {
-  constructor(sub, cancel) {
-    super(sub);
+  constructor(subscriber, cancel) {
+    super(subscriber);
     this.canceller = cancel;
   }
 
-  dispatch = async dispatchMsg => {
-    this.subscription = this.effect(dispatchMsg);
-  };
-
-  cancel = () =>
-    this.subscription &&
-    this.canceller &&
-    Cmd(() => this.canceller(this.subscription));
+  execute = async dispatchMsg => this.effect(dispatchMsg);
+  cancel = sub => isFunction(this.canceller) && Cmd(() => this.canceller(sub));
 }
 
-export const Sub = (sub, cancel) => new Subscription(sub, cancel);
+export const Sub = (subscribe, cancel) => {
+  let sub;
+  const subscriber = dispatchMsg => {
+    sub = subscribe(dispatchMsg);
+  };
+  const canceller = () => cancel(sub);
+  return new Subscription(subscriber, canceller);
+};
 
 Sub.interval = (effect, duration) =>
   Sub(

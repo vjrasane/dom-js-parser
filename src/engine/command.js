@@ -8,7 +8,7 @@ export class Command extends Effect {
     this.failure = failure;
   }
 
-  dispatch = async dispatchMsg => processCommand(this, dispatchMsg);
+  execute = async dispatchMsg => processCommand(this, dispatchMsg);
 }
 
 class Result extends Command {
@@ -16,7 +16,7 @@ class Result extends Command {
     super(result);
   }
 
-  dispatch = async dispatchMsg => dispatchMsg(this.effect);
+  execute = async dispatchMsg => dispatchMsg(this.effect);
 }
 
 export const Cmd = (cmd, success, failure) =>

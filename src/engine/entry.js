@@ -7,6 +7,10 @@ import { exists } from "~/utils";
 const UPDATE_INTERVAL = 1; /* milliseconds */
 const VIEW_INTERVAL = 10; /* milliseconds */
 const RENDER_INTERVAL = 10; /* milliseconds */
+const EFFECT_INTERVAL = 1; /* milliseconds */
+
+const dispatcher = queue => queueable =>
+  exists(queueable) && queue.push(queueable);
 
 const loop = (procedure, interval) => {
   let lock = false;
@@ -20,18 +24,27 @@ const loop = (procedure, interval) => {
 };
 
 export default ({ init, update, view }) => ({ node, flags }) => {
-  const queue = [];
-  const dispatchMsg = msg => exists(msg) && queue.push(msg);
+  // init empty queues
+  const queues = {
+    msg: [],
+    effect: []
+  };
 
-  const renderer = getRenderer(dispatchMsg);
-  const updater = getUpdater(update, dispatchMsg);
+  // create dispatcher for each queue
+  const dispatchers = Object.entries(queues).reduce(
+    (d, [key, queue]) => ({ ...d, [key]: dispatcher(queue) }),
+    {}
+  );
+
+  const renderer = getRenderer(dispatchers.msg);
+  const updater = getUpdater(update, dispatchers);
   const viewer = getViewer(view);
 
-  let model = getInitializer(init, dispatchMsg)(flags);
+  let model = getInitializer(init, dispatchers)(flags);
   // update loop
   loop(() => {
-    if (queue.length > 0) {
-      model = updater(queue.shift(), model);
+    if (queues.msg.length > 0) {
+      model = updater(queues.msg.shift(), model);
     }
   }, UPDATE_INTERVAL);
 
@@ -53,4 +66,13 @@ export default ({ init, update, view }) => ({ node, flags }) => {
       renderedVirtualDom = virtualDom;
     }
   }, RENDER_INTERVAL);
+
+  // effect loop
+  loop(() => {
+    if (queues.effect.length > 0) {
+      const effect = queues.effect.shift();
+      // execute effect with the message dispatcher
+      effect.execute(dispatchers.msg);
+    }
+  }, EFFECT_INTERVAL);
 };

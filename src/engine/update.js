@@ -10,5 +10,5 @@ const throwUpdateError = throwError(
 
 export const Update = (model, ...effects) => new Return(model, ...effects);
 
-export const getUpdater = (update, dispatchMsg) =>
-  isFunction(update) ? process(update, dispatchMsg) : throwUpdateError;
+export const getUpdater = (update, dispatchers) =>
+  isFunction(update) ? process(update, dispatchers) : throwUpdateError;
